@@ -116,6 +116,23 @@
             document.body.removeChild(link);
         }
 
+        function getParameterByName(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+        }
+    
+        function resetData() {
+            localStorage.removeItem("attendanceData");
+            loadChart();
+            alert("Data has been reset.");
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            if (getParameterByName("resetData") === "true") {
+                resetData();
+            }}
+        });
+
         window.onload = loadChart;
     </script>
 </body>
