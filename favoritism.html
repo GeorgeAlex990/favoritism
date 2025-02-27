@@ -79,11 +79,23 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: "Ianis Venit", data: ianisVenitData, backgroundColor: "blue" },
-                        { label: "Ianis Comentat", data: ianisComentatData, backgroundColor: "green" },
-                        { label: "Veghes Venit", data: veghesVenitData, backgroundColor: "red" },
-                        { label: "Veghes Comentat", data: veghesComentatData, backgroundColor: "purple" }
+                        { label: "Ianis - A venit după Cipi", data: ianisVenitData, backgroundColor: "blue" },
+                        { label: "Ianis - A comentat Cipi", data: ianisComentatData, backgroundColor: "lightblue" },
+                        { label: "Veghes - A venit după Cipi", data: veghesVenitData, backgroundColor: "green" },
+                        { label: "Veghes - A comentat Cipi", data: veghesComentatData, backgroundColor: "lightgreen" }
                     ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value ? 'Yes' : 'No';
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
