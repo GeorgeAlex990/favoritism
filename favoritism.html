@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .checkbox-group { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Today's Date: <span id="today-date"></span></h1>
+        <div class="checkbox-group">
+            <h2>Ianis</h2>
+            <label><input type="checkbox" id="ianis-venit"> A venit după Cipi</label><br>
+            <label><input type="checkbox" id="ianis-comentat"> A comentat Cipi</label>
+        </div>
+        <div class="checkbox-group">
+            <h2>Veghes</h2>
+            <label><input type="checkbox" id="veghes-venit"> A venit după Cipi</label><br>
+            <label><input type="checkbox" id="veghes-comentat"> A comentat Cipi</label>
+        </div>
+        <button onclick="saveData()">Save Data</button>
+        <canvas id="attendanceChart"></canvas>
+    </div>
+
+    <script>
+        document.getElementById("today-date").textContent = new Date().toISOString().split('T')[0];
+
+        function saveData() {
+            const data = {
+                date: new Date().toISOString().split('T')[0],
+                Ianis: {
+                    venit: document.getElementById("ianis-venit").checked,
+                    comentat: document.getElementById("ianis-comentat").checked
+                },
+                Veghes: {
+                    venit: document.getElementById("veghes-venit").checked,
+                    comentat: document.getElementById("veghes-comentat").checked
+                }
+            };
+            let storedData = localStorage.getItem("attendanceData");
+            storedData = storedData ? JSON.parse(storedData) : [];
+            storedData.push(data);
+            localStorage.setItem("attendanceData", JSON.stringify(storedData));
+            loadChart();
+        }
+
+        function loadChart() {
+            const ctx = document.getElementById("attendanceChart").getContext("2d");
+            let storedData = localStorage.getItem("attendanceData");
+            storedData = storedData ? JSON.parse(storedData) : [];
+            const labels = storedData.map(d => d.date);
+            const ianisData = storedData.map(d => d.Ianis.venit ? 1 : 0);
+            const veghesData = storedData.map(d => d.Veghes.venit ? 1 : 0);
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: "Ianis", data: ianisData, backgroundColor: "blue" },
+                        { label: "Veghes", data: veghesData, backgroundColor: "red" }
+                    ]
+                }
+            });
+        }
+
+        window.onload = loadChart;
+    </script>
+</body>
+</html>
