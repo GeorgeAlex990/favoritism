@@ -34,8 +34,13 @@
         let chartInstance = null;
 
         function saveData() {
-            const data = {
-                date: new Date().toISOString().split('T')[0],
+            const today = new Date().toISOString().split('T')[0];
+            let storedData = localStorage.getItem("attendanceData");
+            storedData = storedData ? JSON.parse(storedData) : [];
+            
+            const index = storedData.findIndex(d => d.date === today);
+            const dataEntry = {
+                date: today,
                 Ianis: {
                     venit: document.getElementById("ianis-venit").checked,
                     comentat: document.getElementById("ianis-comentat").checked
@@ -45,9 +50,13 @@
                     comentat: document.getElementById("veghes-comentat").checked
                 }
             };
-            let storedData = localStorage.getItem("attendanceData");
-            storedData = storedData ? JSON.parse(storedData) : [];
-            storedData.push(data);
+            
+            if (index >= 0) {
+                storedData[index] = dataEntry;
+            } else {
+                storedData.push(dataEntry);
+            }
+            
             localStorage.setItem("attendanceData", JSON.stringify(storedData));
             loadChart();
         }
@@ -57,8 +66,10 @@
             let storedData = localStorage.getItem("attendanceData");
             storedData = storedData ? JSON.parse(storedData) : [];
             const labels = storedData.map(d => d.date);
-            const ianisData = storedData.map(d => d.Ianis.venit ? 1 : 0);
-            const veghesData = storedData.map(d => d.Veghes.venit ? 1 : 0);
+            const ianisVenitData = storedData.map(d => d.Ianis.venit ? 1 : 0);
+            const ianisComentatData = storedData.map(d => d.Ianis.comentat ? 1 : 0);
+            const veghesVenitData = storedData.map(d => d.Veghes.venit ? 1 : 0);
+            const veghesComentatData = storedData.map(d => d.Veghes.comentat ? 1 : 0);
 
             if (chartInstance) {
                 chartInstance.destroy();
@@ -68,8 +79,10 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: "Ianis", data: ianisData, backgroundColor: "blue" },
-                        { label: "Veghes", data: veghesData, backgroundColor: "red" }
+                        { label: "Ianis Venit", data: ianisVenitData, backgroundColor: "blue" },
+                        { label: "Ianis Comentat", data: ianisComentatData, backgroundColor: "green" },
+                        { label: "Veghes Venit", data: veghesVenitData, backgroundColor: "red" },
+                        { label: "Veghes Comentat", data: veghesComentatData, backgroundColor: "purple" }
                     ]
                 }
             });
