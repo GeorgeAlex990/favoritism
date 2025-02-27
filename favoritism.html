@@ -25,11 +25,13 @@
             <label><input type="checkbox" id="veghes-comentat"> A comentat Cipi</label>
         </div>
         <button onclick="saveData()">Save Data</button>
+        <button onclick="exportCSV()">Download CSV</button>
         <canvas id="attendanceChart"></canvas>
     </div>
 
     <script>
         document.getElementById("today-date").textContent = new Date().toISOString().split('T')[0];
+        let chartInstance = null;
 
         function saveData() {
             const data = {
@@ -57,7 +59,11 @@
             const labels = storedData.map(d => d.date);
             const ianisData = storedData.map(d => d.Ianis.venit ? 1 : 0);
             const veghesData = storedData.map(d => d.Veghes.venit ? 1 : 0);
-            new Chart(ctx, {
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            chartInstance = new Chart(ctx, {
                 type: "bar",
                 data: {
                     labels: labels,
@@ -67,6 +73,22 @@
                     ]
                 }
             });
+        }
+
+        function exportCSV() {
+            let storedData = localStorage.getItem("attendanceData");
+            storedData = storedData ? JSON.parse(storedData) : [];
+            let csvContent = "date,ianis_venit,ianis_comentat,veghes_venit,veghes_comentat\n";
+            storedData.forEach(({ date, Ianis, Veghes }) => {
+                csvContent += `${date},${Ianis.venit},${Ianis.comentat},${Veghes.venit},${Veghes.comentat}\n`;
+            });
+            const blob = new Blob([csvContent], { type: "text/csv" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "attendance_data.csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         window.onload = loadChart;
